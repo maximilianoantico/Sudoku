@@ -52,9 +52,8 @@ def hay_valor_en_fila(sudoku, fila, valor):
     siguientes celdas:
     (3, 0), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6), (3, 7), (3, 8)
     '''
-    for val_fila in sudoku[fila]:
-        if val_fila == valor and val_fila!=0:
-            return True
+    if valor in (sudoku[fila]):
+        return True
 
 
 def hay_valor_en_columna(sudoku, columna, valor):
@@ -66,11 +65,9 @@ def hay_valor_en_columna(sudoku, columna, valor):
     siguientes celdas:
     (0, 3), (1, 3), (2, 3), (3, 3), (4, 3), (5, 3), (6, 3), (7, 3), (8, 3)
     '''
-    for i in sudoku:
-        colum=[]
-        valor_c = i[columna]
-        colum.append(valor_c) 
-        if valor in colum and i!=0:
+    for fila in sudoku:
+        valor_c = fila[columna]
+        if valor == valor_c:
             return True
 
 
@@ -99,24 +96,15 @@ def obtener_origen_region(fila, columna):
     deberá devolver (0, 3).
     '''
     
-    region_1 = ([0,0], [0,1], [0,2], [1,0], [1,1], [1,2], [2,0], [2,1], [2,2])
-    region_2 = ([0,3], [0,4], [0,5], [1,3], [1,4], [1,5], [2,3], [2,4], [2,5])
-    region_3 = ([0,6], [0,7], [0,8], [1,6], [1,7], [1,8], [2,6], [2,7], [2,8])
-    region_4 = ([3,0], [3,1], [3,2], [4,0], [4,1], [4,2], [5,0], [5,1], [5,2])
-    region_5 = ([3,3], [3,4], [3,5], [4,3], [4,4], [4,5], [5,3], [5,4], [5,5])
-    region_6 = ([3,6], [3,7], [3,8], [4,6], [4,7], [4,8], [5,6], [5,7], [5,8])
-    region_7 = ([6,0], [6,1], [6,2], [7,0], [7,1], [7,2], [8,0], [8,1], [8,2])
-    region_8 = ([6,3], [6,4], [6,5], [7,3], [7,4], [7,5], [8,3], [8,4], [8,5])
-    region_9 = ([6,6], [6,7], [6,8], [7,6], [7,7], [7,8], [8,6], [8,7], [8,8])
+    #- La función obtener_origen_region está muy hardcodeada. 
+    #La solución es una simple división. 
+    #Si esto en la columna 4 y hago (4 // 3)  * 3 me lleva al origen de la region que es 3, 
+    #así se puede hacer para fila y columna.
     
-    all_regions = (region_1, region_2, region_3, region_4, region_5, region_6, 
-                   region_7, region_8, region_9)
-    origen = [fila,columna]
-    
-    for region in all_regions:
-        for org_reg in region:
-            if org_reg == origen:
-                return tuple(region[0])
+    origen_fila = ((fila) // 3) * 3
+    origen_columna = ((columna) // 3) * 3 
+    region = (origen_fila, origen_columna)
+    return region
 
 def hay_valor_en_region(sudoku, fila, columna, valor):
     '''
@@ -131,28 +119,20 @@ def hay_valor_en_region(sudoku, fila, columna, valor):
     (0, 0), (0, 1) (0, 2), (1, 0), (1, 1), (1, 2), (2, 0), (2, 1), (2, 2).
     '''
     
-    
-    region_1 = ((0,0), (0,1), (0,2), (1,0), (1,1), (1,2), (2,0), (2,1), (2,2))
-    region_2 = ((0,3), (0,4), (0,5), (1,3), (1,4), (1,5), (2,3), (2,4), (2,5))
-    region_3 = ((0,6), (0,7), (0,8), (1,6), (1,7), (1,8), (2,6), (2,7), (2,8))
-    region_4 = ((3,0), (3,1), (3,2), (4,0), (4,1), (4,2), (5,0), (5,1), (5,2))
-    region_5 = ((3,3), (3,4), (3,5), (4,3), (4,4), (4,5), (5,3), (5,4), (5,5))
-    region_6 = ((3,6), (3,7), (3,8), (4,6), (4,7), (4,8), (5,6), (5,7), (5,8))
-    region_7 = ((6,0), (6,1), (6,2), (7,0), (7,1), (7,2), (8,0), (8,1), (8,2))
-    region_8 = ((6,3), (6,4), (6,5), (7,3), (7,4), (7,5), (8,3), (8,4), (8,5))
-    region_9 = ((6,6), (6,7), (6,8), (7,6), (7,7), (7,8), (8,6), (8,7), (8,8))
-    
-    all_regions = (region_1, region_2, region_3, region_4, region_5, region_6, 
-                   region_7, region_8, region_9)
-    
     #Obtengo la region donde debo verificar si se encuentra el valor ingresado
-    for regions in all_regions:
-        if regions[0] == obtener_origen_region(fila, columna):
-            region_valor = regions         
-            for region in region_valor:
-                if (sudoku[(region[0])][(region[1])] == valor and 
-                    sudoku[(region[0])][(region[1])] != 0):
-                    return True
+    
+    region = obtener_origen_region(fila, columna)
+    region_fila = region[0]
+    region_columna = region[1] 
+    
+    for filas in range (3):
+        region_columna = region[1] 
+        for columnas in range(3):
+            region_valor = sudoku[region_fila][region_columna]
+            region_columna+=1
+            if region_valor == valor:
+                return True
+        region_fila+=1
                 
 
 def es_movimiento_valido(sudoku, fila, columna, valor):
@@ -169,12 +149,11 @@ def es_movimiento_valido(sudoku, fila, columna, valor):
     
     No modifica el Sudoku recibido.
     '''
-    if (True != hay_valor_en_region(sudoku, fila, columna, valor) 
-        and True != hay_valor_en_columna(sudoku, columna, valor) 
-        and True != hay_valor_en_fila(sudoku, fila, valor) and valor != 0):
+    if (not hay_valor_en_region(sudoku, fila, columna, valor)
+    and not hay_valor_en_columna(sudoku, columna, valor)
+    and not hay_valor_en_fila(sudoku, fila, valor) and valor != 0):
         return True
-    else:
-        return False
+    return False
 
 def insertar_valor(sudoku, fila, columna, valor):
     '''
@@ -186,10 +165,7 @@ def insertar_valor(sudoku, fila, columna, valor):
     mismo Sudoku que se recibió por parámetro.
     '''
     
-    if valor > 9 or valor < 0:
-        return sudoku
-    elif (True == (es_movimiento_valido(sudoku, fila, columna, valor)) 
-        and 1 <= int(valor) <=9):
+    if (es_movimiento_valido(sudoku, fila, columna, valor)):
         new_sudoku = copy.deepcopy(sudoku)
         new_sudoku[fila][columna] = valor
         return new_sudoku
@@ -219,28 +195,19 @@ def esta_terminado(sudoku):
     (es decir, no hay repetidos en la columna, ni en la fila
     ni en la región).
     '''
-    
-    aciertos = 0
-    fila = 0
-    for f in sudoku:
-        columna = 0
-        for valor in f:
-            if (False == es_movimiento_valido(sudoku, fila, columna, valor) and valor!= 0):
-                aciertos+=1
-            columna += 1
-        fila += 1
-    if aciertos == 81:
-        return True
+    for i in range(9):
+        if not VACIO in sudoku[i]:
+            return True
+
 
 def obtener_valor(sudoku, fila, columna):
     '''
     Devuelve el número que se encuentra en la celda (fila, columna)
     o la constante VACIO si no hay ningún número en dicha celda.
     '''
-    if sudoku[fila][columna] != VACIO:
-        return sudoku[fila][columna]
-    else:
-        return VACIO
+    
+    return sudoku[fila][columna]
+ 
 
 def hay_movimientos_posibles(sudoku):
     '''
@@ -251,17 +218,8 @@ def hay_movimientos_posibles(sudoku):
     pueda completarse correctamente, sólamente indica que hay
     al menos una posible inserción.
     '''
-    mov_posibles = 0
-    fila = 0
-    for f in sudoku:
-        columna = 0
-        for valor in f:
-            if (False == es_movimiento_valido(sudoku, fila, columna, valor) and valor!= 0):
-                mov_posibles+=1
-            columna += 1
-        fila += 1
-    if mov_posibles < 81:
-        return True
-    
-    
-    
+
+    for fila in sudoku:
+        for valor in fila:
+            if valor == VACIO:
+                return True
